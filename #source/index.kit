@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Форум котиков</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <div class="wrapper">
+        	<div class="comments">
+                <div class="comments__comment" 
+                    v-for="comment in posts" 
+                    :key="comment.id"
+                    >
+                    <div class="comments__body">
+                        <div class="comments__rows">
+                            <div class="comments__img">
+                                <img src="http://placekitten.com/100/100" alt="">
+                            </div>
+                            <div class="comments__text">
+                                <h3 v-for="user in users" v-if="user.id == comment.userId" :key="user.id">{{ user.name }}</h3>
+                                <h2>{{ comment.title }}</h2>
+                                <p>{{ comment.body }}</p>
+                            </div>
+                        </div>
+                        <div class="comments__open">
+                            <a @click.once='openComment' 
+                                v-show="visible" 
+                                :data-id='comment.id'
+                                >{{ openText }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="commented" 
+                        v-show="status" 
+                        :data-id='comment.id'
+                        >
+                        <div class="commented__comment" 
+                            v-for="comments in postIds"
+                            v-if="comment.id == comments.postId"
+                            :key="comments.id"
+                            >
+                            <div class="commented__body">
+                                <div class="commented__img">
+                                    <img src="http://placekitten.com/g/40/60" alt="">
+                                </div>
+                                <div class="commented__text">
+                                    <h2>{{ comments.name }} <span>промурчал</span></h2>
+                                    <p>{{ comments.body }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="commented__hide">
+                            <a @click='hideComments'>{{ hideText }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="filters">
+                <h4>{{ filterName }}</h4>
+                <form action="/" method="post">
+                    <p>{{ names }}</p>
+                    <input type="text" name="name" v-model="search">
+                    <p>{{ content }}</p>
+                    <input type="text" name="content">
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        var app = new Vue({
+          el: '#app',
+          data: {
+            openText: 'Открыть комментарии',
+            hideText: 'Скрыть комментарии',
+            filterName: 'Фильтры',
+            names: 'Имя/название',
+            content: 'Контент',
+            span: 'Контент',
+            status: 0,
+            visible: 1,
+            users: [],
+            posts: [],
+            postIds: [],
+            search: '',
+          },
+          methods: {
+            openComment() {
+                this.status = 1;
+                this.visible = 0;
+            },
+            hideComments() {
+                this.status = 0;
+                this.visible = 1;
+            }
+          },
+          mounted() {
+            axios.get('https://jsonplaceholder.typicode.com/posts').then(response => (this.posts = response.data));
+            axios.get('https://jsonplaceholder.typicode.com/users').then(response => (this.users = response.data));
+            axios.get('https://jsonplaceholder.typicode.com/comments').then(response => (this.postIds = response.data));
+          }
+        })
+    </script>
+</body>
+</html>

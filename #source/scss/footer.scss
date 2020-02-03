@@ -1,0 +1,14 @@
+$c: center;
+$c: center;
+$w: wrap;
+
+@mixin justify($c, $c, $w) {
+  	display: flex;
+	justify-content: $c;
+	align-items: $c;
+	flex-wrap: $w;
+}
+
+@media (max-width: 1200px) {}
+@media (max-width: 992px) {}
+@media (max-width: 767px) {}
